@@ -1,0 +1,6 @@
+frontend/node_modules
+frontend/.next
+backend/.venv
+.superpowers
+__pycache__
+*.pyc
