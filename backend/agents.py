@@ -1,4 +1,4 @@
-from typing import TypedDict
+
 
 ROOMS: dict[str, dict] = {
     "pm_zone":    {"x": 68,  "y": 60},
