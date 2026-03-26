@@ -15,5 +15,5 @@ export const AGENTS: AgentConfig[] = [
   { id: 'dev',      role: 'Dev',      emoji: '⚙️', color: '#0ea5e9', homeRoom: 'dev_zone'   },
   { id: 'qa',       role: 'QA',       emoji: '🔬', color: '#a855f7', homeRoom: 'qa_zone'    },
   { id: 'designer', role: 'Designer', emoji: '🎨', color: '#22c55e', homeRoom: 'design'     },
-  { id: 'devops',   role: 'DevOps',   emoji: '🚀', color: '#f97316', homeRoom: 'meeting'    },
+  { id: 'devops',   role: 'DevOps',   emoji: '🚀', color: '#f97316', homeRoom: 'meeting'    }, // no dedicated zone; DevOps operates from the meeting room
 ]

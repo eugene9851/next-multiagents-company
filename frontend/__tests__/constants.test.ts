@@ -8,6 +8,7 @@ describe('ROOMS', () => {
       expect(typeof room.x).toBe('number')
       expect(typeof room.y).toBe('number')
       expect(typeof room.label).toBe('string')
+      expect(typeof room.icon).toBe('string')
     })
   })
 })
