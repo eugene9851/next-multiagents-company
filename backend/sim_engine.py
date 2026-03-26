@@ -25,7 +25,16 @@ class SimEngine:
         await self.broadcast(dict(self.agents[agent_id]))
 
     async def idle_agent(self, agent_id: str) -> None:
-        self.agents[agent_id].update({"status": "idle", "message": ""})
+        # Find home room for this agent
+        home_room = next(cfg["home"] for cfg in AGENT_CONFIGS if cfg["id"] == agent_id)
+        coords = ROOMS[home_room]
+        self.agents[agent_id].update({
+            "status": "idle",
+            "message": "",
+            "room": home_room,
+            "x": coords["x"],
+            "y": coords["y"],
+        })
         await self.broadcast(dict(self.agents[agent_id]))
 
     async def run_flow(self) -> None:

@@ -28,6 +28,10 @@ export function useAgentStore(url: string): AgentStore {
       }
     }
 
+    ws.onerror = () => {
+      console.warn('WebSocket connection failed — is the backend running?')
+    }
+
     return () => ws.close()
   }, [url])
 

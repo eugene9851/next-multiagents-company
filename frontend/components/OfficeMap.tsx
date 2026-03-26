@@ -6,13 +6,14 @@ interface Props {
   agents: Record<string, AgentState>
 }
 
-const roomStyle: Record<string, string> = {
-  pm_zone:    'left-10 top-10 w-[130px] h-[90px] border-indigo-500/40 text-indigo-400',
-  dev_zone:   'right-10 top-10 w-[150px] h-[90px] border-sky-500/40 text-sky-400',
-  meeting:    'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[110px] h-[85px] border-purple-500/40 text-purple-400',
-  qa_zone:    'left-10 bottom-10 w-[130px] h-[80px] border-green-500/40 text-green-400',
-  design:     'right-10 bottom-24 w-[140px] h-[80px] border-orange-500/40 text-orange-400',
-  ceo_office: 'right-10 bottom-4 w-[140px] h-[75px] border-yellow-500/40 text-yellow-400',
+// Room dimensions and pixel offsets — these define the clickable zone around each agent's home coordinate
+const ROOM_BOXES: Record<string, { width: number; height: number; offsetX: number; offsetY: number; border: string; text: string }> = {
+  pm_zone:    { width: 130, height: 90,  offsetX: -10, offsetY: -10, border: 'border-indigo-500/40', text: 'text-indigo-400' },
+  dev_zone:   { width: 150, height: 90,  offsetX: -10, offsetY: -10, border: 'border-sky-500/40',    text: 'text-sky-400'    },
+  meeting:    { width: 120, height: 90,  offsetX: -60, offsetY: -45, border: 'border-purple-500/40', text: 'text-purple-400' },
+  qa_zone:    { width: 130, height: 80,  offsetX: -10, offsetY: -10, border: 'border-green-500/40',  text: 'text-green-400'  },
+  design:     { width: 140, height: 80,  offsetX: -10, offsetY: -10, border: 'border-orange-500/40', text: 'text-orange-400' },
+  ceo_office: { width: 140, height: 75,  offsetX: -10, offsetY: -10, border: 'border-yellow-500/40', text: 'text-yellow-400' },
 }
 
 export function OfficeMap({ agents }: Props) {
@@ -25,18 +26,27 @@ export function OfficeMap({ agents }: Props) {
         backgroundSize: '32px 32px',
       }}
     >
-      {/* Rooms */}
-      {Object.entries(ROOMS).map(([key, room]) => (
-        <div
-          key={key}
-          className={`absolute flex flex-col items-center justify-center gap-1 rounded-xl border bg-white/[0.02] ${roomStyle[key]}`}
-        >
-          <span className="text-xl">{room.icon}</span>
-          <span className="text-[10px] font-bold tracking-wide">{room.label}</span>
-        </div>
-      ))}
+      {/* Rooms — positioned to surround the agent home coordinates */}
+      {Object.entries(ROOMS).map(([key, room]) => {
+        const box = ROOM_BOXES[key]
+        return (
+          <div
+            key={key}
+            className={`absolute flex flex-col items-center justify-center gap-1 rounded-xl border bg-white/2 ${box.border} ${box.text}`}
+            style={{
+              left: room.x + box.offsetX,
+              top: room.y + box.offsetY,
+              width: box.width,
+              height: box.height,
+            }}
+          >
+            <span className="text-xl">{room.icon}</span>
+            <span className="text-[10px] font-bold tracking-wide">{room.label}</span>
+          </div>
+        )
+      })}
 
-      {/* Agent Dots */}
+      {/* Agent Dots — positioned using framer-motion animate x/y */}
       {Object.values(agents).map(agent => (
         <AgentDot key={agent.id} agent={agent} />
       ))}

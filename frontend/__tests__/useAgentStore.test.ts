@@ -41,9 +41,12 @@ describe('useAgentStore', () => {
 
   it('sendTask calls ws.send with correct payload', () => {
     const { result } = renderHook(() => useAgentStore('ws://localhost:8000/ws'))
+    const ws = result.current.wsRef.current as unknown as InstanceType<typeof MockWebSocket>
     act(() => {
       result.current.sendTask('로그인 기능 구현')
     })
-    expect(true).toBe(true)
+    expect(ws.send).toHaveBeenCalledWith(
+      JSON.stringify({ type: 'task', description: '로그인 기능 구현' })
+    )
   })
 })

@@ -1,7 +1,7 @@
 import pytest
 import asyncio
 from unittest.mock import AsyncMock, MagicMock
-from agents import build_initial_agents, ROOMS
+from agents import build_initial_agents, ROOMS, AGENT_CONFIGS
 from sim_engine import SimEngine
 
 @pytest.fixture
@@ -34,9 +34,14 @@ async def test_move_agent_broadcasts(engine, broadcast_mock):
 async def test_idle_agent_clears_message(engine, broadcast_mock):
     engine.agents["pm"]["status"] = "active"
     engine.agents["pm"]["message"] = "작업 중"
+    engine.agents["pm"]["room"] = "meeting"
     await engine.idle_agent("pm")
     assert engine.agents["pm"]["status"] == "idle"
     assert engine.agents["pm"]["message"] == ""
+    # Should return to home room
+    assert engine.agents["pm"]["room"] == "pm_zone"
+    assert engine.agents["pm"]["x"] == ROOMS["pm_zone"]["x"]
+    assert engine.agents["pm"]["y"] == ROOMS["pm_zone"]["y"]
 
 @pytest.mark.asyncio
 async def test_set_task_resets_on_next_run(engine):
