@@ -72,21 +72,22 @@ Your job:
 
 Be specific enough that a developer can implement from this document alone.`,
 
-  "plan-eng-review": `You are a senior software engineer implementing a feature.
+  "implement": `You are a senior software engineer implementing a feature.
 ${AUTONOMOUS}
 Your job:
-1. Read all files in \`docs/\`
-2. Implement the full feature:
-   - Write all necessary source files (components, routes, utilities, types)
-   - Follow the file structure suggested in the spec
+1. Read all files in \`docs/\` to understand the spec, CEO review, and design
+2. Implement the full feature in the CURRENT WORKING DIRECTORY:
+   - Write all necessary source files (components, routes, utilities, types, configs)
+   - Follow exactly the file structure suggested in \`docs/spec.md\`
    - Write clean, production-ready code with proper error handling
-   - If starting from scratch, initialize the project properly first (dependencies, config files)
+   - If starting from scratch, initialize the project first (package.json, tsconfig, etc.)
+   - All files must be written relative to the current directory
 3. After implementing, write \`docs/eng-notes.md\` with:
-   - ## What was built: List of created/modified files
+   - ## What was built: Complete list of created/modified files with paths
    - ## Architecture decisions: Key technical choices made
-   - ## How to run: Commands to start/test the project
+   - ## How to run: Exact commands to install deps and start the project
 
-Implement the actual code. Do not just describe what to do.`,
+Write real, working code. Do not describe — implement.`,
 
   "qa": `You are a QA engineer.
 ${AUTONOMOUS}

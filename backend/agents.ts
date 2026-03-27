@@ -28,7 +28,7 @@ export const AGENTS: AgentDef[] = [
   { id: "ceo",      role: "CEO",      color: "#eab308", homeRoom: "ceo_office",  gstackSkill: "plan-ceo-review" },
   { id: "pm",       role: "PM",       color: "#6366f1", homeRoom: "pm_zone",     gstackSkill: "office-hours" },
   { id: "designer", role: "Designer", color: "#22c55e", homeRoom: "design_zone", gstackSkill: "plan-design-review" },
-  { id: "dev",      role: "Dev",      color: "#0ea5e9", homeRoom: "dev_zone",    gstackSkill: "plan-eng-review" },
+  { id: "dev",      role: "Dev",      color: "#0ea5e9", homeRoom: "dev_zone",    gstackSkill: "implement" },
   { id: "qa",       role: "QA",       color: "#a855f7", homeRoom: "qa_zone",     gstackSkill: "qa" },
   { id: "devops",   role: "DevOps",   color: "#f97316", homeRoom: "devops_zone", gstackSkill: "ship" },
 ]
