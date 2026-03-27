@@ -1,19 +1,32 @@
-import type { Room, AgentConfig, RoomKey } from '@/types/agent'
+import type { AgentDef, RoomDef } from "@/types/agent"
 
-export const ROOMS: Record<RoomKey, Room> = {
-  pm_zone:    { x: 68,  y: 60,  label: 'PM',         icon: '📋' },
-  dev_zone:   { x: 580, y: 60,  label: 'DEVELOPMENT', icon: '💻' },
-  meeting:    { x: 330, y: 270, label: '회의실',       icon: '🤝' },
-  qa_zone:    { x: 68,  y: 420, label: 'QA',          icon: '🧪' },
-  design:     { x: 580, y: 390, label: 'DESIGN',      icon: '🎨' },
-  ceo_office: { x: 580, y: 480, label: 'CEO OFFICE',  icon: '👔' },
+export const ROOM_DEFS: RoomDef[] = [
+  { id: "ceo_office",  label: "CEO 오피스", position: [0,   0, -8], color: "#eab308" },
+  { id: "pm_zone",     label: "PM 존",      position: [-6,  0, -4], color: "#6366f1" },
+  { id: "meeting",     label: "미팅룸",     position: [0,   0,  0], color: "#64748b" },
+  { id: "dev_zone",    label: "Dev 존",     position: [6,   0, -4], color: "#0ea5e9" },
+  { id: "qa_zone",     label: "QA 존",      position: [-6,  0,  4], color: "#a855f7" },
+  { id: "design_zone", label: "Design 존",  position: [6,   0,  4], color: "#22c55e" },
+  { id: "devops_zone", label: "DevOps 존",  position: [0,   0,  8], color: "#f97316" },
+]
+
+export const AGENT_DEFS: AgentDef[] = [
+  { id: "ceo",      role: "CEO",      color: "#eab308", homeRoom: "ceo_office",  gstackSkill: "plan-ceo-review" },
+  { id: "pm",       role: "PM",       color: "#6366f1", homeRoom: "pm_zone",     gstackSkill: "office-hours" },
+  { id: "designer", role: "Designer", color: "#22c55e", homeRoom: "design_zone", gstackSkill: "plan-design-review" },
+  { id: "dev",      role: "Dev",      color: "#0ea5e9", homeRoom: "dev_zone",    gstackSkill: "plan-eng-review" },
+  { id: "qa",       role: "QA",       color: "#a855f7", homeRoom: "qa_zone",     gstackSkill: "qa" },
+  { id: "devops",   role: "DevOps",   color: "#f97316", homeRoom: "devops_zone", gstackSkill: "ship" },
+]
+
+export function getRoomPosition(roomId: string): [number, number, number] {
+  return ROOM_DEFS.find(r => r.id === roomId)?.position ?? [0, 0, 0]
 }
 
-export const AGENTS: AgentConfig[] = [
-  { id: 'ceo',      role: 'CEO',      emoji: '👔', color: '#eab308', homeRoom: 'ceo_office' },
-  { id: 'pm',       role: 'PM',       emoji: '🧠', color: '#6366f1', homeRoom: 'pm_zone'    },
-  { id: 'dev',      role: 'Dev',      emoji: '⚙️', color: '#0ea5e9', homeRoom: 'dev_zone'   },
-  { id: 'qa',       role: 'QA',       emoji: '🔬', color: '#a855f7', homeRoom: 'qa_zone'    },
-  { id: 'designer', role: 'Designer', emoji: '🎨', color: '#22c55e', homeRoom: 'design'     },
-  { id: 'devops',   role: 'DevOps',   emoji: '🚀', color: '#f97316', homeRoom: 'meeting'    }, // no dedicated zone; DevOps operates from the meeting room
-]
+export function getRoomColor(roomId: string): string {
+  return ROOM_DEFS.find(r => r.id === roomId)?.color ?? "#334155"
+}
+
+export function getAgentDef(id: string): AgentDef | undefined {
+  return AGENT_DEFS.find(a => a.id === id)
+}
