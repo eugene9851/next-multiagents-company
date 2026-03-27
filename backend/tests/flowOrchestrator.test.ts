@@ -2,12 +2,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import type { AgentEvent } from "../types"
 
 // Mock GstackRunner
-vi.mock("../gstackRunner", () => ({
-  GstackRunner: vi.fn().mockImplementation(() => ({
-    run: vi.fn().mockResolvedValue(undefined),
-    abort: vi.fn(),
-  })),
-}))
+vi.mock("../gstackRunner", () => {
+  const GstackRunner = vi.fn(function (this: { run: unknown; abort: unknown }) {
+    this.run = vi.fn().mockResolvedValue(undefined)
+    this.abort = vi.fn()
+  })
+  return { GstackRunner }
+})
 
 import { FlowOrchestrator, PIPELINE } from "../flowOrchestrator"
 
