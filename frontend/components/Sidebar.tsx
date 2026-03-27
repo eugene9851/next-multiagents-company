@@ -12,7 +12,7 @@ interface SidebarProps {
   log: Array<{ time: string; agentId: string; message: string }>
   selectedAgent: AgentId | null
   connected: boolean
-  onTaskSubmit: (description: string) => void
+  onTaskSubmit: (description: string, workDir?: string) => void
   onSelectAgent: (id: AgentId) => void
 }
 

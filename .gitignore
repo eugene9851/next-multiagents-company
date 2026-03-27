@@ -8,3 +8,4 @@ __pycache__
 .worktrees
 outputs/*
 !outputs/.gitkeep
+node_modules

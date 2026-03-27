@@ -63,8 +63,11 @@ wss.on("connection", (ws) => {
         msg.description.length > 0 &&
         msg.description.length <= 2000
       ) {
+        const workDir = typeof msg.workDir === "string" && msg.workDir.trim().length > 0
+          ? msg.workDir.trim()
+          : undefined
         const orch = await getOrchestratorInstance()
-        orch.run(msg.description).catch(console.error)
+        orch.run(msg.description, workDir).catch(console.error)
       }
     } catch {
       // ignore malformed messages

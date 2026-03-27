@@ -25,7 +25,7 @@ export interface OfficeSocketState {
   log: Array<{ time: string; agentId: string; message: string }>
   selectedAgent: AgentId | null
   connected: boolean
-  sendTask: (description: string) => void
+  sendTask: (description: string, workDir?: string) => void
   selectAgent: (id: AgentId | null) => void
 }
 
@@ -103,11 +103,11 @@ export function useOfficeSocket(url: string): OfficeSocketState {
     }
   }
 
-  const sendTask = useCallback((description: string) => {
+  const sendTask = useCallback((description: string, workDir?: string) => {
     const ws = wsRef.current
     // readyState 1 === OPEN
     if (ws && ws.readyState === 1) {
-      ws.send(JSON.stringify({ type: "start_task", description }))
+      ws.send(JSON.stringify({ type: "start_task", description, workDir }))
     }
   }, [])
 

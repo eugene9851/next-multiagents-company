@@ -21,10 +21,7 @@ function RoomTile({
 }) {
   const meshRef = useRef<Mesh>(null)
   const [x, , z] = room.position
-  const baseColor = new Color(room.color)
-  const floorColor = isActive
-    ? baseColor.clone().multiplyScalar(1.4)
-    : baseColor.clone().multiplyScalar(0.25)
+  const floorColor = "#" + new Color(room.color).multiplyScalar(isActive ? 1.4 : 0.25).getHexString()
 
   return (
     <group position={[x, 0, z]} onClick={onClick}>

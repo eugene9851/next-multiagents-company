@@ -1,0 +1,18 @@
+{
+  "name": "next-multiagents-company",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix frontend\" \"bash -c 'source backend/.venv/bin/activate && uvicorn main:app --reload --port 8000 --app-dir backend'\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

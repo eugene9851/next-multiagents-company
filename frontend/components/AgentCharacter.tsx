@@ -89,9 +89,7 @@ export function AgentCharacter({
     }
   })
 
-  const bodyColor = new Color(color)
-  const skinColor = new Color("#fbbf24")
-  const pantsColor = bodyColor.clone().multiplyScalar(0.6)
+  const pantsColor = "#" + new Color(color).multiplyScalar(0.6).getHexString()
   const selectedScale: [number, number, number] = isSelected ? [1.15, 1.15, 1.15] : [1, 1, 1]
 
   return (
@@ -115,7 +113,7 @@ export function AgentCharacter({
         {/* Head */}
         <mesh position={[0, 1.6, 0]} castShadow>
           <sphereGeometry args={[0.22, 16, 16]} />
-          <meshStandardMaterial color={skinColor} roughness={0.6} />
+          <meshStandardMaterial color="#fbbf24" roughness={0.6} />
         </mesh>
 
         {/* Eyes */}
@@ -131,14 +129,14 @@ export function AgentCharacter({
         {/* Torso */}
         <mesh position={[0, 1.05, 0]} castShadow>
           <boxGeometry args={[0.38, 0.5, 0.2]} />
-          <meshStandardMaterial color={bodyColor} roughness={0.7} />
+          <meshStandardMaterial color={color} roughness={0.7} />
         </mesh>
 
         {/* Left arm */}
         <group ref={leftArmRef} position={[-0.28, 1.25, 0]}>
           <mesh position={[0, -0.2, 0]}>
             <capsuleGeometry args={[0.07, 0.35, 4, 8]} />
-            <meshStandardMaterial color={bodyColor} roughness={0.7} />
+            <meshStandardMaterial color={color} roughness={0.7} />
           </mesh>
         </group>
 
@@ -146,7 +144,7 @@ export function AgentCharacter({
         <group ref={rightArmRef} position={[0.28, 1.25, 0]}>
           <mesh position={[0, -0.2, 0]}>
             <capsuleGeometry args={[0.07, 0.35, 4, 8]} />
-            <meshStandardMaterial color={bodyColor} roughness={0.7} />
+            <meshStandardMaterial color={color} roughness={0.7} />
           </mesh>
         </group>
 

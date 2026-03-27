@@ -59,7 +59,7 @@ export default function Home() {
         overflow: "hidden",
       }}
     >
-      <div style={{ flex: 1, position: "relative" }}>
+      <div style={{ flex: 1, position: "relative", minWidth: 0, height: "100%" }}>
         <OfficeCanvas
           agents={agents}
           selectedAgent={selectedAgent}

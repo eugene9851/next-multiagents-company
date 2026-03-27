@@ -30,9 +30,11 @@ export function OfficeCanvas({ agents, selectedAgent, onAgentClick, onRoomClick 
   return (
     <Canvas
       shadows
-      camera={{ position: [14, 14, 14], near: 0.1, far: 200 }}
-      style={{ background: "#080810" }}
+      camera={{ position: [14, 14, 14], fov: 60, near: 0.1, far: 200 }}
+      gl={{ alpha: false, antialias: true }}
+      style={{ width: "100%", height: "100%", display: "block" }}
     >
+      <color attach="background" args={["#080810"]} />
       <ambientLight intensity={0.6} />
       <directionalLight
         position={[10, 20, 10]}

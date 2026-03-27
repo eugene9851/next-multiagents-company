@@ -1,3 +1,5 @@
+import { mkdirSync, existsSync } from "fs"
+import { execSync } from "child_process"
 import { GstackRunner } from "./gstackRunner"
 import { AGENTS } from "./agents"
 import type { AgentEvent, AgentId } from "./types"
@@ -9,18 +11,29 @@ export interface PipelineStep {
 }
 
 export const PIPELINE: PipelineStep[] = [
-  { agentId: "pm",       targetRoom: "pm_zone",      workMessage: "/office-hours 실행 중..." },
-  { agentId: "ceo",      targetRoom: "ceo_office",    workMessage: "/plan-ceo-review 중..." },
-  { agentId: "designer", targetRoom: "design_zone",   workMessage: "/plan-design-review 중..." },
-  { agentId: "dev",      targetRoom: "dev_zone",      workMessage: "/plan-eng-review + 빌드 중..." },
-  { agentId: "qa",       targetRoom: "qa_zone",       workMessage: "/qa 테스트 실행 중..." },
-  { agentId: "devops",   targetRoom: "devops_zone",   workMessage: "/ship 배포 준비 중..." },
+  { agentId: "pm",       targetRoom: "pm_zone",      workMessage: "요구사항 분석 + spec.md 작성 중..." },
+  { agentId: "ceo",      targetRoom: "ceo_office",    workMessage: "비즈니스 리뷰 + ceo-review.md 작성 중..." },
+  { agentId: "designer", targetRoom: "design_zone",   workMessage: "UX 설계 + design.md 작성 중..." },
+  { agentId: "dev",      targetRoom: "dev_zone",      workMessage: "코드 구현 중..." },
+  { agentId: "qa",       targetRoom: "qa_zone",       workMessage: "테스트 작성 + qa-report.md 작성 중..." },
+  { agentId: "devops",   targetRoom: "devops_zone",   workMessage: "배포 체크리스트 작성 중..." },
 ]
 
 const MOVE_DELAY_MS = 800
 
 function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+function ensureProjectDir(workDir: string): void {
+  if (!existsSync(workDir)) {
+    mkdirSync(workDir, { recursive: true })
+    try {
+      execSync("git init", { cwd: workDir, stdio: "ignore" })
+    } catch {
+      // git init failure is non-fatal
+    }
+  }
 }
 
 export class FlowOrchestrator {
@@ -35,15 +48,19 @@ export class FlowOrchestrator {
     this.runner = new GstackRunner()
   }
 
-  async run(taskDescription: string): Promise<void> {
+  async run(taskDescription: string, workDir?: string): Promise<void> {
     if (this.running) return
     this.running = true
     this.aborted = false
 
+    if (workDir) {
+      ensureProjectDir(workDir)
+    }
+
     try {
       for (const step of PIPELINE) {
         if (this.aborted) break
-        await this.executeStep(step, taskDescription)
+        await this.executeStep(step, taskDescription, workDir)
       }
 
       this.broadcast({
@@ -68,11 +85,9 @@ export class FlowOrchestrator {
     } finally {
       this.running = false
 
-      // Clear any existing reset timers before scheduling new ones
       this.resetTimers.forEach(clearTimeout)
       this.resetTimers = []
 
-      // Reset all agents to idle after 2 seconds
       for (const agent of AGENTS) {
         const t = setTimeout(() => {
           this.broadcast({
@@ -89,8 +104,7 @@ export class FlowOrchestrator {
     }
   }
 
-  private async executeStep(step: PipelineStep, taskDescription: string): Promise<void> {
-    // 1. Announce movement
+  private async executeStep(step: PipelineStep, taskDescription: string, workDir?: string): Promise<void> {
     this.broadcast({
       type: "agent_update",
       agentId: step.agentId,
@@ -102,7 +116,6 @@ export class FlowOrchestrator {
 
     await delay(MOVE_DELAY_MS)
 
-    // 2. Announce work start
     this.broadcast({
       type: "agent_update",
       agentId: step.agentId,
@@ -112,7 +125,6 @@ export class FlowOrchestrator {
       message: step.workMessage,
     })
 
-    // 3. Run gstack skill
     const agentDef = AGENTS.find(a => a.id === step.agentId)
     if (!agentDef) throw new Error(`Unknown agent: ${step.agentId}`)
 
@@ -129,10 +141,10 @@ export class FlowOrchestrator {
           message: step.workMessage,
           chunk,
         })
-      }
+      },
+      workDir
     )
 
-    // 4. Announce completion
     this.broadcast({
       type: "agent_done",
       agentId: step.agentId,
