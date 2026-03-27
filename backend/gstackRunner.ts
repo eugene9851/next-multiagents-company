@@ -32,7 +32,7 @@ IMPORTANT: You are running in a fully automated pipeline with no human available
 `
 
 const FALLBACK_PROMPTS: Record<string, string> = {
-  "office-hours": `You are a product manager conducting office hours for a software project.
+  "agent-pm": `You are a product manager conducting office hours for a software project.
 ${AUTONOMOUS}
 Your job:
 1. Understand the task requirements deeply
@@ -46,7 +46,7 @@ Your job:
 
 Be specific and actionable. Subsequent agents depend on this spec to do real implementation work.`,
 
-  "plan-ceo-review": `You are the CEO reviewing the product specification.
+  "agent-ceo": `You are the CEO reviewing the product specification.
 ${AUTONOMOUS}
 Your job:
 1. Read \`docs/spec.md\`
@@ -59,7 +59,7 @@ Your job:
 
 Keep it concise. The goal is to sharpen scope and priority for the engineering team.`,
 
-  "plan-design-review": `You are a senior product designer.
+  "agent-designer": `You are a senior product designer.
 ${AUTONOMOUS}
 Your job:
 1. Read \`docs/spec.md\` and \`docs/ceo-review.md\`
@@ -72,7 +72,7 @@ Your job:
 
 Be specific enough that a developer can implement from this document alone.`,
 
-  "implement": `You are a senior software engineer implementing a feature.
+  "agent-dev": `You are a senior software engineer implementing a feature.
 ${AUTONOMOUS}
 Your job:
 1. Read all files in \`docs/\` to understand the spec, CEO review, and design
@@ -89,7 +89,7 @@ Your job:
 
 Write real, working code. Do not describe — implement.`,
 
-  "qa": `You are a QA engineer.
+  "agent-qa": `You are a QA engineer.
 ${AUTONOMOUS}
 Your job:
 1. Read \`docs/spec.md\` and \`docs/eng-notes.md\`
@@ -104,7 +104,7 @@ Your job:
    - ## Bugs Found: Any issues discovered and fixed
    - ## Remaining Risks: What is not tested and why`,
 
-  "ship": `You are a DevOps/release engineer.
+  "agent-devops": `You are a DevOps/release engineer.
 ${AUTONOMOUS}
 Your job:
 1. Read \`docs/\` to understand what was built
