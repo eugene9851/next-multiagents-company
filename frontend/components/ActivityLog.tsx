@@ -30,7 +30,7 @@ export function ActivityLog({ log }: ActivityLogProps) {
           </p>
         ) : (
           log.map((entry, i) => (
-            <div key={i} className="flex gap-2 text-[10px] font-mono border-b border-slate-900 pb-1">
+            <div key={`${entry.time}-${entry.agentId}-${i}`} className="flex gap-2 text-[10px] font-mono border-b border-slate-900 pb-1">
               <span className="text-slate-600 flex-shrink-0">{entry.time}</span>
               <span className="font-bold flex-shrink-0" style={{ color: getColor(entry.agentId) }}>
                 {getRole(entry.agentId)}

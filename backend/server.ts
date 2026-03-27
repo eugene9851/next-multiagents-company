@@ -22,13 +22,16 @@ export function broadcast(event: AgentEvent): void {
   }
 }
 
-// Lazy-load orchestrator to avoid circular deps
-let orchestratorPromise: Promise<{ FlowOrchestrator: any }> | null = null
-function getOrchestrator() {
-  if (!orchestratorPromise) {
-    orchestratorPromise = import("./flowOrchestrator")
+// Singleton orchestrator instance (prevents multiple concurrent runs)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let orchestratorInstance: any | null = null
+
+async function getOrchestratorInstance() {
+  if (!orchestratorInstance) {
+    const { FlowOrchestrator } = await import("./flowOrchestrator")
+    orchestratorInstance = new FlowOrchestrator(broadcast)
   }
-  return orchestratorPromise
+  return orchestratorInstance
 }
 
 app.get("/health", (_req, res) => {
@@ -54,9 +57,13 @@ wss.on("connection", (ws) => {
   ws.on("message", async (raw) => {
     try {
       const msg = JSON.parse(raw.toString())
-      if (msg.type === "start_task" && typeof msg.description === "string") {
-        const { FlowOrchestrator } = await getOrchestrator()
-        const orch = new FlowOrchestrator(broadcast)
+      if (
+        msg.type === "start_task" &&
+        typeof msg.description === "string" &&
+        msg.description.length > 0 &&
+        msg.description.length <= 2000
+      ) {
+        const orch = await getOrchestratorInstance()
         orch.run(msg.description).catch(console.error)
       }
     } catch {
