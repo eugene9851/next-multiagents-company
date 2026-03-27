@@ -1,5 +1,7 @@
 import { mkdirSync, existsSync } from "fs"
 import { execSync } from "child_process"
+import { join } from "path"
+import { homedir } from "os"
 import { GstackRunner } from "./gstackRunner"
 import { AGENTS } from "./agents"
 import type { AgentEvent, AgentId } from "./types"
@@ -23,6 +25,22 @@ const MOVE_DELAY_MS = 800
 
 function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .trim()
+    .replace(/[\s_]+/g, "-")
+    .slice(0, 40)
+}
+
+function resolveWorkDir(workDir: string | undefined, taskDescription: string): string {
+  if (workDir) return workDir
+  const slug = slugify(taskDescription) || "project"
+  const date = new Date().toISOString().slice(0, 10)
+  return join(homedir(), "agent-projects", `${slug}-${date}`)
 }
 
 function ensureProjectDir(workDir: string): void {
@@ -53,14 +71,14 @@ export class FlowOrchestrator {
     this.running = true
     this.aborted = false
 
-    if (workDir) {
-      ensureProjectDir(workDir)
-    }
+    const resolvedDir = resolveWorkDir(workDir, taskDescription)
+    ensureProjectDir(resolvedDir)
+    console.log(`[FlowOrchestrator] Project dir: ${resolvedDir}`)
 
     try {
       for (const step of PIPELINE) {
         if (this.aborted) break
-        await this.executeStep(step, taskDescription, workDir)
+        await this.executeStep(step, taskDescription, resolvedDir)
       }
 
       this.broadcast({
@@ -70,6 +88,7 @@ export class FlowOrchestrator {
         animState: "idle",
         room: "devops_zone",
         message: "✅ 파이프라인 완료!",
+        projectDir: resolvedDir,
       })
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)

@@ -12,6 +12,7 @@ interface SidebarProps {
   log: Array<{ time: string; agentId: string; message: string }>
   selectedAgent: AgentId | null
   connected: boolean
+  projectDir: string | null
   onTaskSubmit: (description: string, workDir?: string) => void
   onSelectAgent: (id: AgentId) => void
 }
@@ -28,6 +29,7 @@ export function Sidebar({
   log,
   selectedAgent,
   connected,
+  projectDir,
   onTaskSubmit,
   onSelectAgent,
 }: SidebarProps) {
@@ -43,6 +45,14 @@ export function Sidebar({
           </span>
         </div>
       </div>
+
+      {/* Project dir banner */}
+      {projectDir && (
+        <div className="px-4 py-2 border-b border-slate-800 bg-slate-950/60">
+          <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">프로젝트 경로</div>
+          <div className="text-[11px] text-emerald-400 font-mono break-all">{projectDir}</div>
+        </div>
+      )}
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto flex flex-col min-h-0">

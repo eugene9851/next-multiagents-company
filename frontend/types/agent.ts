@@ -38,6 +38,7 @@ export interface AgentEvent {
   message: string
   chunk?: string         // only for stream_chunk events
   errorMsg?: string      // only for error events
+  projectDir?: string    // only for flow_complete events
 }
 
 // WebSocket: client → server

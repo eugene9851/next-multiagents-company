@@ -13,4 +13,5 @@ export interface AgentEvent {
   message: string
   chunk?: string
   errorMsg?: string
+  projectDir?: string
 }

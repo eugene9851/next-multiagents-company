@@ -25,6 +25,7 @@ export interface OfficeSocketState {
   log: Array<{ time: string; agentId: string; message: string }>
   selectedAgent: AgentId | null
   connected: boolean
+  projectDir: string | null
   sendTask: (description: string, workDir?: string) => void
   selectAgent: (id: AgentId | null) => void
 }
@@ -35,6 +36,7 @@ export function useOfficeSocket(url: string): OfficeSocketState {
   const [log, setLog] = useState<Array<{ time: string; agentId: string; message: string }>>([])
   const [selectedAgent, setSelectedAgent] = useState<AgentId | null>(null)
   const [connected, setConnected] = useState(false)
+  const [projectDir, setProjectDir] = useState<string | null>(null)
   const wsRef = useRef<WebSocket | null>(null)
 
   useEffect(() => {
@@ -105,6 +107,7 @@ export function useOfficeSocket(url: string): OfficeSocketState {
 
     if (event.type === "flow_complete") {
       setOutputChunks({})
+      if (event.projectDir) setProjectDir(event.projectDir)
     }
   }
 
@@ -120,5 +123,5 @@ export function useOfficeSocket(url: string): OfficeSocketState {
     setSelectedAgent(id)
   }, [])
 
-  return { agents, outputChunks, log, selectedAgent, connected, sendTask, selectAgent }
+  return { agents, outputChunks, log, selectedAgent, connected, projectDir, sendTask, selectAgent }
 }

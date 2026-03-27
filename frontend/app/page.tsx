@@ -37,6 +37,7 @@ export default function Home() {
     log,
     selectedAgent,
     connected,
+    projectDir,
     sendTask,
     selectAgent,
   } = useOfficeSocket(WS_URL)
@@ -74,6 +75,7 @@ export default function Home() {
         log={log}
         selectedAgent={selectedAgent}
         connected={connected}
+        projectDir={projectDir}
         onTaskSubmit={sendTask}
         onSelectAgent={selectAgent}
       />
