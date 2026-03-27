@@ -1,7 +1,7 @@
 "use client"
 
-import { Canvas } from "@react-three/fiber"
-import { OrbitControls } from "@react-three/drei"
+import { Canvas, useThree } from "@react-three/fiber"
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { RoomGroup } from "./RoomGroup"
 import { AgentCharacter } from "./AgentCharacter"
 import { AGENT_DEFS, getRoomPosition } from "@/constants/office"
@@ -24,25 +24,17 @@ function getActiveRooms(agents: Record<string, AgentState>): Set<string> {
   return rooms
 }
 
-export function OfficeCanvas({ agents, selectedAgent, onAgentClick, onRoomClick }: OfficeCanvasProps) {
+function Scene({
+  agents,
+  selectedAgent,
+  onAgentClick,
+  onRoomClick,
+}: OfficeCanvasProps) {
   const activeRooms = getActiveRooms(agents)
 
   return (
-    <Canvas
-      shadows
-      camera={{ position: [14, 14, 14], fov: 60, near: 0.1, far: 200 }}
-      gl={{ alpha: false, antialias: true }}
-      style={{ width: "100%", height: "100%", display: "block" }}
-    >
-      <color attach="background" args={["#080810"]} />
-      <ambientLight intensity={0.6} />
-      <directionalLight
-        position={[10, 20, 10]}
-        intensity={1.2}
-        castShadow
-        shadow-mapSize={[2048, 2048]}
-      />
-      <pointLight position={[0, 8, 0]} intensity={0.4} color="#6366f1" />
+    <>
+      <PerspectiveCamera makeDefault position={[14, 14, 14]} fov={60} near={0.1} far={200} />
 
       <OrbitControls
         enablePan={false}
@@ -51,6 +43,10 @@ export function OfficeCanvas({ agents, selectedAgent, onAgentClick, onRoomClick 
         maxDistance={40}
         target={[0, 0, 0]}
       />
+
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[10, 20, 10]} intensity={1.2} />
+      <pointLight position={[0, 8, 0]} intensity={0.4} color="#6366f1" />
 
       <RoomGroup activeRooms={activeRooms} onRoomClick={onRoomClick} />
 
@@ -73,6 +69,19 @@ export function OfficeCanvas({ agents, selectedAgent, onAgentClick, onRoomClick 
           />
         )
       })}
+    </>
+  )
+}
+
+export function OfficeCanvas(props: OfficeCanvasProps) {
+  return (
+    <Canvas
+      style={{ width: "100%", height: "100%", display: "block", background: "#080810" }}
+      onCreated={({ gl }) => {
+        gl.setClearColor(0x080810, 1)
+      }}
+    >
+      <Scene {...props} />
     </Canvas>
   )
 }

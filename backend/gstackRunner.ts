@@ -22,9 +22,18 @@ function getSkillPrompt(skillName: string): string {
   return FALLBACK_PROMPTS[skillName] ?? ""
 }
 
+const AUTONOMOUS = `
+IMPORTANT: You are running in a fully automated pipeline with no human available to answer questions.
+- Never present options (A/B/C) or ask the user to choose
+- Never ask clarifying questions or request confirmation
+- Make all decisions yourself using your best judgment
+- If something is ambiguous, pick the most reasonable interpretation and proceed
+- Complete your task fully and autonomously
+`
+
 const FALLBACK_PROMPTS: Record<string, string> = {
   "office-hours": `You are a product manager conducting office hours for a software project.
-
+${AUTONOMOUS}
 Your job:
 1. Understand the task requirements deeply
 2. Create a \`docs/\` directory if it doesn't exist
@@ -33,17 +42,16 @@ Your job:
    - ## User Stories: Concrete user stories (As a... I want... So that...)
    - ## Technical Requirements: Specific technical requirements list
    - ## File Structure: Suggested project file/folder layout
-   - ## Open Questions: Any ambiguities that need resolution
 4. If this is a new project with no package.json or similar, also create a minimal project bootstrap appropriate for the task (e.g. package.json for a Node project)
 
 Be specific and actionable. Subsequent agents depend on this spec to do real implementation work.`,
 
   "plan-ceo-review": `You are the CEO reviewing the product specification.
-
+${AUTONOMOUS}
 Your job:
 1. Read \`docs/spec.md\`
 2. Write \`docs/ceo-review.md\` with:
-   - ## Decision: Go ✅ or No-Go ❌ with one-line rationale
+   - ## Decision: Go ✅ with rationale
    - ## Business Value: Why this matters to users
    - ## MVP Scope: What is the minimum viable version
    - ## Cut: What to cut or defer
@@ -52,7 +60,7 @@ Your job:
 Keep it concise. The goal is to sharpen scope and priority for the engineering team.`,
 
   "plan-design-review": `You are a senior product designer.
-
+${AUTONOMOUS}
 Your job:
 1. Read \`docs/spec.md\` and \`docs/ceo-review.md\`
 2. Write \`docs/design.md\` with:
@@ -65,7 +73,7 @@ Your job:
 Be specific enough that a developer can implement from this document alone.`,
 
   "plan-eng-review": `You are a senior software engineer implementing a feature.
-
+${AUTONOMOUS}
 Your job:
 1. Read all files in \`docs/\`
 2. Implement the full feature:
@@ -81,7 +89,7 @@ Your job:
 Implement the actual code. Do not just describe what to do.`,
 
   "qa": `You are a QA engineer.
-
+${AUTONOMOUS}
 Your job:
 1. Read \`docs/spec.md\` and \`docs/eng-notes.md\`
 2. Write tests for the implemented code:
@@ -96,7 +104,7 @@ Your job:
    - ## Remaining Risks: What is not tested and why`,
 
   "ship": `You are a DevOps/release engineer.
-
+${AUTONOMOUS}
 Your job:
 1. Read \`docs/\` to understand what was built
 2. Write \`docs/ship-checklist.md\` with:
@@ -126,6 +134,7 @@ export class GstackRunner {
         "--print",
         "--dangerously-skip-permissions",
         "--output-format", "stream-json",
+        "--verbose",
       ]
 
       if (skillPrompt) {
@@ -139,6 +148,11 @@ export class GstackRunner {
       this.currentProc = proc
 
       let buffer = ""
+      let stderrBuf = ""
+
+      proc.stderr.on("data", (data: Buffer) => {
+        stderrBuf += data.toString()
+      })
 
       proc.stdout.on("data", (data: Buffer) => {
         buffer += data.toString()
@@ -170,7 +184,8 @@ export class GstackRunner {
         if (code === 0) {
           resolve()
         } else {
-          reject(new Error(`claude CLI exited with exit code ${code}`))
+          const detail = stderrBuf.trim() ? ` — ${stderrBuf.trim().slice(0, 300)}` : ""
+          reject(new Error(`claude CLI exited with code ${code}${detail}`))
         }
       })
 

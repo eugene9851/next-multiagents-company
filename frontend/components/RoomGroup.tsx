@@ -21,12 +21,12 @@ function RoomTile({
 }) {
   const meshRef = useRef<Mesh>(null)
   const [x, , z] = room.position
-  const floorColor = "#" + new Color(room.color).multiplyScalar(isActive ? 1.4 : 0.25).getHexString()
+  const floorColor = "#" + new Color(room.color).multiplyScalar(isActive ? 1.4 : 0.5).getHexString()
 
   return (
     <group position={[x, 0, z]} onClick={onClick}>
       {/* Floor tile */}
-      <mesh ref={meshRef} position={[0, -0.05, 0]} receiveShadow>
+      <mesh ref={meshRef} position={[0, -0.05, 0]}>
         <boxGeometry args={[4.5, 0.1, 4.5]} />
         <meshStandardMaterial
           color={floorColor}
@@ -69,7 +69,7 @@ export function RoomGroup({ activeRooms, onRoomClick }: RoomGroupProps) {
   return (
     <group>
       {/* Overall floor */}
-      <mesh position={[0, -0.1, 0]} receiveShadow>
+      <mesh position={[0, -0.1, 0]}>
         <boxGeometry args={[24, 0.1, 24]} />
         <meshStandardMaterial color="#0f172a" />
       </mesh>

@@ -73,6 +73,7 @@ export class FlowOrchestrator {
       })
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
+      console.error("[FlowOrchestrator] Pipeline error:", msg)
       this.broadcast({
         type: "error",
         agentId: "devops",

@@ -111,7 +111,7 @@ export function AgentCharacter({
       {/* Torso group for breathing animation */}
       <group ref={torsoRef}>
         {/* Head */}
-        <mesh position={[0, 1.6, 0]} castShadow>
+        <mesh position={[0, 1.6, 0]}>
           <sphereGeometry args={[0.22, 16, 16]} />
           <meshStandardMaterial color="#fbbf24" roughness={0.6} />
         </mesh>
@@ -127,7 +127,7 @@ export function AgentCharacter({
         </mesh>
 
         {/* Torso */}
-        <mesh position={[0, 1.05, 0]} castShadow>
+        <mesh position={[0, 1.05, 0]}>
           <boxGeometry args={[0.38, 0.5, 0.2]} />
           <meshStandardMaterial color={color} roughness={0.7} />
         </mesh>

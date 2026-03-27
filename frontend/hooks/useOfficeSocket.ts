@@ -98,6 +98,11 @@ export function useOfficeSocket(url: string): OfficeSocketState {
       setLog(prev => [{ time, agentId: event.agentId, message: event.message }, ...prev].slice(0, 100))
     }
 
+    // Auto-select agent when they start working or finish, so output is visible
+    if (event.type === "agent_done" || event.status === "running") {
+      setSelectedAgent(event.agentId)
+    }
+
     if (event.type === "flow_complete") {
       setOutputChunks({})
     }
