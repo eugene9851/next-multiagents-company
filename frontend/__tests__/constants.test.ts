@@ -1,32 +1,32 @@
 import { describe, it, expect } from 'vitest'
-import { ROOMS, AGENTS } from '@/constants/office'
+import { ROOM_DEFS, AGENT_DEFS } from '@/constants/office'
 
-describe('ROOMS', () => {
-  it('has 6 rooms with x and y coordinates', () => {
-    expect(Object.keys(ROOMS)).toHaveLength(6)
-    Object.values(ROOMS).forEach(room => {
-      expect(typeof room.x).toBe('number')
-      expect(typeof room.y).toBe('number')
-      expect(typeof room.label).toBe('string')
-      expect(typeof room.icon).toBe('string')
+describe('ROOM_DEFS', () => {
+  it('has 7 rooms with 3D position and color', () => {
+    expect(ROOM_DEFS).toHaveLength(7)
+    ROOM_DEFS.forEach(room => {
+      expect(room.id).toBeTruthy()
+      expect(room.label).toBeTruthy()
+      expect(room.position).toHaveLength(3)
+      expect(room.color).toMatch(/^#[0-9a-f]{6}$/i)
     })
   })
 })
 
-describe('AGENTS', () => {
+describe('AGENT_DEFS', () => {
   it('has 6 agents with required fields', () => {
-    expect(AGENTS).toHaveLength(6)
-    AGENTS.forEach(agent => {
+    expect(AGENT_DEFS).toHaveLength(6)
+    AGENT_DEFS.forEach(agent => {
       expect(agent).toHaveProperty('id')
       expect(agent).toHaveProperty('role')
-      expect(agent).toHaveProperty('emoji')
       expect(agent).toHaveProperty('color')
       expect(agent).toHaveProperty('homeRoom')
+      expect(agent).toHaveProperty('gstackSkill')
     })
   })
 
   it('contains ceo, pm, dev, qa, designer, devops', () => {
-    const ids = AGENTS.map(a => a.id)
+    const ids = AGENT_DEFS.map(a => a.id)
     expect(ids).toContain('ceo')
     expect(ids).toContain('pm')
     expect(ids).toContain('dev')
