@@ -1,22 +1,82 @@
-'use client'
+"use client"
 
-import { useAgentStore } from '@/hooks/useAgentStore'
-import { TopBar } from '@/components/TopBar'
-import { OfficeMap } from '@/components/OfficeMap'
-import { Sidebar } from '@/components/Sidebar'
+import dynamic from "next/dynamic"
+import { Sidebar } from "@/components/Sidebar"
+import { useOfficeSocket } from "@/hooks/useOfficeSocket"
+import type { AgentId } from "@/types/agent"
 
-const WS_URL = 'ws://localhost:8000/ws'
+// R3F Canvas must not SSR — it uses WebGL APIs
+const OfficeCanvas = dynamic(
+  () => import("@/components/OfficeCanvas").then(m => m.OfficeCanvas),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#080810",
+        }}
+      >
+        <p style={{ color: "#475569", fontFamily: "monospace", fontSize: "14px" }}>
+          오피스 로딩 중...
+        </p>
+      </div>
+    ),
+  }
+)
+
+const WS_URL = "ws://localhost:3001"
 
 export default function Home() {
-  const { agents, log, sendTask } = useAgentStore(WS_URL)
+  const {
+    agents,
+    outputChunks,
+    log,
+    selectedAgent,
+    connected,
+    sendTask,
+    selectAgent,
+  } = useOfficeSocket(WS_URL)
+
+  function handleAgentClick(id: AgentId) {
+    selectAgent(id)
+  }
+
+  function handleRoomClick(roomId: string) {
+    const agentInRoom = Object.values(agents).find(a => a.room === roomId)
+    if (agentInRoom) selectAgent(agentInRoom.id)
+  }
 
   return (
-    <div className="w-screen h-screen flex flex-col overflow-hidden">
-      <TopBar agentCount={Object.keys(agents).length} />
-      <div className="flex flex-1 overflow-hidden">
-        <OfficeMap agents={agents} />
-        <Sidebar agents={agents} log={log} onTaskSubmit={sendTask} />
+    <div
+      style={{
+        display: "flex",
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ flex: 1, position: "relative" }}>
+        <OfficeCanvas
+          agents={agents}
+          selectedAgent={selectedAgent}
+          onAgentClick={handleAgentClick}
+          onRoomClick={handleRoomClick}
+        />
       </div>
+
+      <Sidebar
+        agents={agents}
+        outputChunks={outputChunks}
+        log={log}
+        selectedAgent={selectedAgent}
+        connected={connected}
+        onTaskSubmit={sendTask}
+        onSelectAgent={selectAgent}
+      />
     </div>
   )
 }
